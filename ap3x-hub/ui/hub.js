@@ -11,6 +11,8 @@ import { getEventStream, onEventsChange, isSimulationRunning, startSimulation, p
 // MOUNT
 // ─────────────────────────────────────────────
 
+let _rootEl = null;
+
 const root = document.getElementById("hub-root");
 if (root) {
   mount(root);
@@ -18,8 +20,6 @@ if (root) {
   onTripsChange(() => rerender());
   onEventsChange(() => rerender());
 }
-
-let _rootEl = null;
 
 function mount(el) {
   _rootEl = el;
