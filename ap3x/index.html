@@ -28,10 +28,10 @@
     const root = document.getElementById("ap3x-root");
     mountDashboard(root);
 
-    // PWA service worker
+    // PWA service worker — use relative path for GitHub Pages compatibility
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("/ap3x/pwa/sw.js", { scope: "/ap3x/" })
+        .register("pwa/sw.js", { scope: "./" })
         .then(() => console.log("[AP3X] Service worker registered"))
         .catch((err) => console.warn("[AP3X] SW registration failed:", err));
     }

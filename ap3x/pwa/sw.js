@@ -1,15 +1,15 @@
-// AP3X Command OS — Service Worker
-const CACHE = "ap3x-command-v1";
+// AP3X Command OS — Service Worker (GitHub Pages compatible)
+const CACHE = "ap3x-command-v2";
 const ASSETS = [
-  "/ap3x/",
-  "/ap3x/index.html",
-  "/ap3x/ui/ap3x.css",
-  "/ap3x/ui/dashboard.js",
-  "/ap3x/core/storage.js",
-  "/ap3x/core/vehicles.js",
-  "/ap3x/core/trips.js",
-  "/ap3x/engine/simulation-engine.js",
-  "/ap3x/engine/ai-assistant.js"
+  "./",
+  "./index.html",
+  "./ui/ap3x.css",
+  "./ui/dashboard.js",
+  "./core/storage.js",
+  "./core/vehicles.js",
+  "./core/trips.js",
+  "./engine/simulation-engine.js",
+  "./engine/ai-assistant.js"
 ];
 
 self.addEventListener("install",   e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(() => {}))));

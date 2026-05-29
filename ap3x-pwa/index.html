@@ -29,9 +29,10 @@
     const root = document.getElementById("ap3x-traveller-root");
     mountTraveller(root);
 
+    // PWA service worker — relative path for GitHub Pages compatibility
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("/ap3x-pwa/pwa/sw.js", { scope: "/ap3x-pwa/" })
+        .register("pwa/sw.js", { scope: "./" })
         .then(() => console.log("[AP3X PWA] Service worker registered"))
         .catch(err => console.warn("[AP3X PWA] SW failed:", err));
     }

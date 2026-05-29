@@ -1,14 +1,10 @@
-// AP3X RV Traveller PWA — Service Worker
-const CACHE = "ap3x-traveller-v1";
+// AP3X RV Traveller PWA — Service Worker (GitHub Pages compatible)
+const CACHE = "ap3x-traveller-v2";
 const ASSETS = [
-  "/ap3x-pwa/",
-  "/ap3x-pwa/index.html",
-  "/ap3x-pwa/ui/traveller.css",
-  "/ap3x-pwa/ui/traveller.js",
-  "/ap3x/core/storage.js",
-  "/ap3x/core/trips.js",
-  "/ap3x/core/vehicles.js",
-  "/ap3x/engine/ai-assistant.js"
+  "./",
+  "./index.html",
+  "./ui/traveller.css",
+  "./ui/traveller.js"
 ];
 
 self.addEventListener("install",  e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(() => {}))));
