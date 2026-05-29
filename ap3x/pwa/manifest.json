@@ -1,0 +1,18 @@
+{
+  "name": "AP3X Motorhome & RV Command OS",
+  "short_name": "AP3X Command",
+  "description": "AP3X Motorhome & RV Intelligent Travel Management Simulation OS",
+  "start_url": "/ap3x/?view=overview",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "icons": [
+    { "src": "/icons/ap3x-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/ap3x-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Fleet Overview",  "url": "/ap3x/?view=overview",   "description": "Fleet command overview" },
+    { "name": "Trip Monitor",    "url": "/ap3x/?view=trips",       "description": "Live trip progression" },
+    { "name": "AI Insights",     "url": "/ap3x/?view=ai",          "description": "Travel intelligence" }
+  ]
+}

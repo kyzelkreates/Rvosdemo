@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AP3X Motorhome & RV Command OS — Intelligent Travel Management Simulation Platform" />
+  <meta name="theme-color" content="#0a0e1a" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="ui/ap3x.css" />
+  <link rel="manifest" href="pwa/manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="AP3X Command OS" />
+
+  <!-- SIMULATION ONLY — not real-world vehicle control software -->
+
+  <title>AP3X — Motorhome & RV Command OS</title>
+</head>
+<body>
+  <div id="ap3x-root"></div>
+
+  <script type="module">
+    import { mountDashboard } from "./ui/dashboard.js";
+
+    const root = document.getElementById("ap3x-root");
+    mountDashboard(root);
+
+    // PWA service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/ap3x/pwa/sw.js", { scope: "/ap3x/" })
+        .then(() => console.log("[AP3X] Service worker registered"))
+        .catch((err) => console.warn("[AP3X] SW registration failed:", err));
+    }
+
+    // Handle URL view param
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get("view");
+    if (view) {
+      import("./ui/dashboard.js").then(({ navigate }) => navigate(view));
+    }
+  </script>
+</body>
+</html>

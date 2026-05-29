@@ -1,0 +1,360 @@
+/* AP3X RV Traveller & Driver Interface — Mobile-first PWA Stylesheet
+   Clean, readable, low cognitive load travel companion
+   ─────────────────────────────────────────────────────── */
+
+:root {
+  --bg-base:       #080c17;
+  --bg-surface:    #0d1220;
+  --bg-card:       #111827;
+  --bg-card-hover: #161f30;
+  --border:        #1c2840;
+  --border-glow:   #253a5e;
+  --border-focus:  #3b82f6;
+
+  --text-primary:   #e8f0ff;
+  --text-secondary: #7a91c0;
+  --text-muted:     #4a5c80;
+
+  --accent-blue:    #3b82f6;
+  --accent-blue-2:  #60a5fa;
+  --accent-amber:   #f59e0b;
+  --accent-amber-2: #fbbf24;
+  --accent-green:   #10b981;
+  --accent-red:     #ef4444;
+  --accent-purple:  #8b5cf6;
+
+  --status-en_route:   #3b82f6;
+  --status-at_stop:    #f59e0b;
+  --status-scheduled:  #8b5cf6;
+  --status-completed:  #10b981;
+  --status-delayed:    #f97316;
+
+  --sp-xs:  4px;
+  --sp-sm:  8px;
+  --sp-md:  16px;
+  --sp-lg:  24px;
+  --sp-xl:  36px;
+
+  --r-sm:  6px; --r-md: 12px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+
+  --font:  "Inter", system-ui, sans-serif;
+
+  --t-xs:   0.72rem;
+  --t-sm:   0.85rem;
+  --t-base: 1rem;
+  --t-lg:   1.15rem;
+  --t-xl:   1.4rem;
+  --t-2xl:  1.75rem;
+
+  --tr:     0.15s ease;
+  --sh-md:  0 4px 16px rgba(0,0,0,0.5);
+  --sh-blue: 0 0 20px rgba(59,130,246,0.2);
+  --sh-amber: 0 0 20px rgba(245,158,11,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: var(--font);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── APP SHELL ────────────────────────────── */
+.pwa-app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── TOP BAR ──────────────────────────────── */
+.pwa-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-md);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.pwa-topbar__logo {
+  display: flex; align-items: center; gap: var(--sp-sm);
+  font-size: var(--t-lg); font-weight: 700; letter-spacing: -0.02em;
+}
+
+.pwa-topbar__badge {
+  font-size: var(--t-xs); font-weight: 600;
+  background: var(--accent-blue); color: #fff;
+  padding: 2px 7px; border-radius: var(--r-pill);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+.pwa-topbar__dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 6px var(--accent-green);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+/* ── MAIN ─────────────────────────────────── */
+.pwa-main { flex: 1; padding: var(--sp-md); display: flex; flex-direction: column; gap: var(--sp-md); }
+
+/* ── BOTTOM NAV ───────────────────────────── */
+.pwa-bottom-nav {
+  display: flex;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  position: sticky; bottom: 0; z-index: 100;
+}
+
+.pwa-nav-tab {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 10px var(--sp-sm) 8px;
+  cursor: pointer; border: none; background: transparent;
+  color: var(--text-muted); font-size: var(--t-xs); font-family: var(--font);
+  transition: color var(--tr), background var(--tr);
+  gap: 3px;
+}
+.pwa-nav-tab:hover  { color: var(--text-secondary); background: var(--bg-card); }
+.pwa-nav-tab.active { color: var(--accent-blue-2); }
+.pwa-nav-tab__icon  { font-size: 1.2rem; }
+
+/* ── TRIP OVERVIEW CARD ───────────────────── */
+.pwa-trip-hero {
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(59,130,246,0.08) 100%);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--r-xl);
+  padding: var(--sp-lg);
+  box-shadow: var(--sh-blue);
+}
+
+.pwa-trip-hero__badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: var(--r-pill);
+  font-size: var(--t-xs); font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: var(--sp-md);
+}
+.pwa-trip-hero__badge--en_route  { background: rgba(59,130,246,0.15); color: var(--accent-blue-2); }
+.pwa-trip-hero__badge--at_stop   { background: rgba(245,158,11,0.15); color: var(--accent-amber-2); }
+.pwa-trip-hero__badge--scheduled { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+.pwa-trip-hero__badge--completed { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+.pwa-trip-hero__badge--delayed   { background: rgba(249,115,22,0.15); color: #f97316; }
+
+.pwa-trip-hero__vehicle {
+  font-size: var(--t-2xl); font-weight: 700; line-height: 1.1;
+  color: var(--text-primary);
+}
+.pwa-trip-hero__route {
+  font-size: var(--t-sm); color: var(--text-secondary); margin: 4px 0 var(--sp-md);
+}
+
+.pwa-trip-hero__route-arrow {
+  display: flex; align-items: center; gap: var(--sp-sm);
+  margin-bottom: var(--sp-md);
+  font-size: var(--t-sm); font-weight: 600;
+  color: var(--text-primary);
+}
+.pwa-trip-hero__route-arrow span { color: var(--accent-blue); }
+
+/* progress */
+.pwa-progress { margin-top: var(--sp-sm); }
+.pwa-progress__row { display: flex; justify-content: space-between; font-size: var(--t-xs); color: var(--text-muted); margin-bottom: 6px; }
+.pwa-progress__track { height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; }
+.pwa-progress__fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-2));
+  transition: width 0.8s ease;
+  position: relative;
+}
+.pwa-progress__fill::after {
+  content:''; position: absolute; right: -3px; top: -2px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 8px var(--accent-blue);
+}
+
+/* ── NEXT STOP CARD ───────────────────────── */
+.pwa-next-stop {
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), transparent);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: var(--r-lg);
+  padding: var(--sp-md);
+}
+.pwa-next-stop__label {
+  font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--accent-amber); font-weight: 600; margin-bottom: 4px;
+}
+.pwa-next-stop__name {
+  font-size: var(--t-xl); font-weight: 700; color: var(--text-primary);
+}
+.pwa-next-stop__sub { font-size: var(--t-sm); color: var(--text-muted); margin-top: 4px; }
+.pwa-next-stop__eta {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: var(--t-xs); font-weight: 600;
+  background: rgba(245,158,11,0.1); color: var(--accent-amber-2);
+  padding: 3px 10px; border-radius: var(--r-pill);
+  margin-top: var(--sp-sm);
+}
+
+/* ── CHECKLIST ────────────────────────────── */
+.pwa-checklist { display: flex; flex-direction: column; gap: var(--sp-sm); }
+
+.pwa-checklist__item {
+  display: flex; align-items: center; gap: var(--sp-md);
+  padding: var(--sp-sm) var(--sp-md);
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--r-md); cursor: pointer;
+  transition: background var(--tr), border-color var(--tr);
+}
+.pwa-checklist__item:hover { background: var(--bg-card-hover); }
+.pwa-checklist__item.done  { opacity: 0.55; }
+.pwa-checklist__item.done .pwa-checklist__text { text-decoration: line-through; color: var(--text-muted); }
+
+.pwa-checklist__checkbox {
+  width: 22px; height: 22px; border-radius: var(--r-sm);
+  border: 2px solid var(--border); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: var(--tr); font-size: 0.8rem;
+}
+.pwa-checklist__item.done .pwa-checklist__checkbox {
+  background: var(--accent-green); border-color: var(--accent-green); color: #fff;
+}
+
+.pwa-checklist__text { font-size: var(--t-sm); color: var(--text-primary); }
+.pwa-checklist__note { font-size: var(--t-xs); color: var(--text-muted); margin-top: 1px; }
+
+/* ── ITINERARY ────────────────────────────── */
+.pwa-itinerary { display: flex; flex-direction: column; gap: 0; }
+
+.pwa-stop-item {
+  display: flex; gap: var(--sp-md);
+  padding-bottom: var(--sp-md);
+}
+.pwa-stop-item:last-child { padding-bottom: 0; }
+
+.pwa-stop-item__line {
+  display: flex; flex-direction: column; align-items: center;
+  width: 24px; min-width: 24px;
+}
+.pwa-stop-item__dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--bg-card); flex-shrink: 0; z-index: 1;
+}
+.pwa-stop-item__dot--done    { background: var(--accent-green); }
+.pwa-stop-item__dot--current { background: var(--accent-amber); box-shadow: 0 0 12px var(--accent-amber); animation: blink 1.5s infinite; }
+.pwa-stop-item__dot--future  { background: var(--border); }
+
+.pwa-stop-item__connector {
+  flex: 1; width: 2px; background: var(--border); margin: 2px 0;
+}
+.pwa-stop-item__connector--done { background: var(--accent-green); opacity: 0.4; }
+
+.pwa-stop-item__content { flex: 1; padding-top: 0; }
+.pwa-stop-item__name {
+  font-size: var(--t-base); font-weight: 600; color: var(--text-primary);
+}
+.pwa-stop-item__name--done    { color: var(--text-muted); text-decoration: line-through; font-weight: 400; }
+.pwa-stop-item__name--current { color: var(--accent-amber-2); }
+.pwa-stop-item__sub { font-size: var(--t-xs); color: var(--text-muted); margin-top: 2px; }
+
+/* ── AI CHAT ──────────────────────────────── */
+.pwa-ai-panel { display: flex; flex-direction: column; height: 60vh; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--border); }
+
+.pwa-ai-messages {
+  flex: 1; overflow-y: auto;
+  padding: var(--sp-md); display: flex; flex-direction: column-reverse; gap: var(--sp-sm);
+  background: var(--bg-surface);
+}
+
+.pwa-ai-msg {
+  max-width: 88%; padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--r-lg); font-size: var(--t-sm); line-height: 1.55;
+  white-space: pre-wrap;
+}
+.pwa-ai-msg--assistant {
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  color: var(--text-primary); align-self: flex-start;
+  border-bottom-left-radius: var(--r-sm);
+}
+.pwa-ai-msg--user {
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-secondary); align-self: flex-end;
+  border-bottom-right-radius: var(--r-sm);
+}
+.pwa-ai-msg__time { font-size: var(--t-xs); color: var(--text-muted); margin-top: 3px; }
+
+.pwa-ai-input {
+  display: flex; gap: var(--sp-sm); padding: var(--sp-md);
+  border-top: 1px solid var(--border);
+  background: var(--bg-card);
+}
+.pwa-ai-input input {
+  flex: 1; background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 10px var(--sp-md);
+  color: var(--text-primary); font-size: var(--t-sm); font-family: var(--font);
+  outline: none; transition: border-color var(--tr);
+}
+.pwa-ai-input input:focus { border-color: var(--border-focus); }
+.pwa-ai-input input::placeholder { color: var(--text-muted); }
+
+/* ── BUTTONS ──────────────────────────────── */
+.pwa-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px var(--sp-lg); border-radius: var(--r-md);
+  cursor: pointer; font-size: var(--t-sm); font-weight: 600;
+  font-family: var(--font); border: none; transition: var(--tr);
+  white-space: nowrap;
+}
+.pwa-btn--primary  { background: var(--accent-blue); color: #fff; box-shadow: var(--sh-blue); }
+.pwa-btn--primary:hover { background: var(--accent-blue-2); }
+.pwa-btn--secondary { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary); }
+.pwa-btn--secondary:hover { background: var(--bg-card-hover); border-color: var(--border-glow); color: var(--text-primary); }
+.pwa-btn--full  { width: 100%; justify-content: center; }
+.pwa-btn--amber { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: var(--accent-amber-2); }
+
+/* ── SECTION HEADER ───────────────────────── */
+.pwa-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--sp-sm);
+}
+.pwa-section-title {
+  font-size: var(--t-base); font-weight: 700; color: var(--text-primary);
+  display: flex; align-items: center; gap: var(--sp-sm);
+}
+.pwa-section-sub { font-size: var(--t-xs); color: var(--text-muted); margin-top: 2px; }
+
+/* ── CARD ─────────────────────────────────── */
+.pwa-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-md);
+}
+
+/* ── BADGE ────────────────────────────────── */
+.pwa-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: var(--r-pill);
+  font-size: var(--t-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.pwa-badge--blue   { background: rgba(59,130,246,0.15); color: var(--accent-blue-2); }
+.pwa-badge--amber  { background: rgba(245,158,11,0.15); color: var(--accent-amber-2); }
+.pwa-badge--green  { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+
+/* ── EMPTY ────────────────────────────────── */
+.pwa-empty { text-align: center; padding: var(--sp-xl) var(--sp-md); color: var(--text-muted); }
+.pwa-empty__icon { font-size: 2.5rem; margin-bottom: var(--sp-md); }
+.pwa-empty__title { font-size: var(--t-lg); font-weight: 600; color: var(--text-secondary); }
+.pwa-empty__sub { font-size: var(--t-sm); margin-top: var(--sp-sm); }
+
+/* ── ANIMATIONS ───────────────────────────── */
+.pwa-fade-in { animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(5px); } to { opacity:1; transform:none; } }
+
+/* ── DISCLAIMER ───────────────────────────── */
+.pwa-disclaimer {
+  padding: var(--sp-md); font-size: var(--t-xs); color: var(--text-muted);
+  text-align: center; border-top: 1px solid var(--border);
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }

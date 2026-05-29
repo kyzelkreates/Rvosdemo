@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="AP3X RV Traveller & Driver Interface — Mobile travel companion" />
+  <meta name="theme-color" content="#080c17" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AP3X Traveller" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="ui/traveller.css" />
+  <link rel="manifest" href="pwa/manifest.json" />
+
+  <!-- SIMULATION ONLY — not for real-world navigation -->
+
+  <title>AP3X — RV Traveller Interface</title>
+</head>
+<body>
+  <div id="ap3x-traveller-root"></div>
+
+  <script type="module">
+    import { mountTraveller } from "./ui/traveller.js";
+
+    const root = document.getElementById("ap3x-traveller-root");
+    mountTraveller(root);
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/ap3x-pwa/pwa/sw.js", { scope: "/ap3x-pwa/" })
+        .then(() => console.log("[AP3X PWA] Service worker registered"))
+        .catch(err => console.warn("[AP3X PWA] SW failed:", err));
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get("view");
+    if (view) {
+      import("./ui/traveller.js").then(({ navigate }) => navigate(view));
+    }
+  </script>
+</body>
+</html>

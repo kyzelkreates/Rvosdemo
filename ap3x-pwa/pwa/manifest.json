@@ -1,0 +1,19 @@
+{
+  "name": "AP3X RV Traveller & Driver Interface",
+  "short_name": "AP3X Traveller",
+  "description": "AP3X Motorhome & RV Traveller mobile companion — trip tracking, itinerary, checklist, AI assistant",
+  "start_url": "/ap3x-pwa/?view=trip",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080c17",
+  "theme_color": "#080c17",
+  "icons": [
+    { "src": "/icons/ap3x-traveller-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/ap3x-traveller-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "My Trip",   "url": "/ap3x-pwa/?view=trip",      "description": "Trip overview" },
+    { "name": "Route",     "url": "/ap3x-pwa/?view=itinerary", "description": "Stop itinerary" },
+    { "name": "Checklist", "url": "/ap3x-pwa/?view=checklist", "description": "Travel checklist" }
+  ]
+}
