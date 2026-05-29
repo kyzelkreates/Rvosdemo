@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/ap3x-hub/ui/hub.css" />
+<style>body{background:#060a14;color:white;font-family:sans-serif;}</style>
+</head>
+<body>
+<div id="hub-root"></div>
+<div id="err" style="color:red;padding:20px;white-space:pre-wrap;"></div>
+<script type="module">
+  const errEl = document.getElementById('err');
+  
+  window.addEventListener('error', e => {
+    errEl.textContent += 'WINDOW ERROR: ' + e.message + '\n' + e.filename + ':' + e.lineno + '\n\n';
+  });
+  window.addEventListener('unhandledrejection', e => {
+    errEl.textContent += 'UNHANDLED REJECTION: ' + e.reason + '\n\n';
+  });
+
+  try {
+    // Import hub.js directly and check what happens
+    const hubMod = await import('/ap3x-hub/ui/hub.js');
+    errEl.textContent += 'hub.js imported OK. Exports: ' + Object.keys(hubMod).join(', ') + '\n';
+  } catch(e) {
+    errEl.textContent += 'IMPORT ERROR: ' + e.message + '\n' + e.stack + '\n';
+  }
+  
+  // Check if hub-root has content after 1 second
+  await new Promise(r => setTimeout(r, 1000));
+  const root = document.getElementById('hub-root');
+  errEl.textContent += '\nhub-root children after 1s: ' + root.children.length;
+  errEl.textContent += '\nhub-root innerHTML (first 200): ' + root.innerHTML.substring(0,200);
+</script>
+</body>
+</html>
