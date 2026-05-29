@@ -3,12 +3,11 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "framework": null,
-  "routes": [
-    { "src": "^/$",                  "dest": "/ap3x-hub/index.html" },
-    { "src": "^/ap3x-hub/?$",        "dest": "/ap3x-hub/index.html" },
-    { "src": "^/ap3x/?$",            "dest": "/ap3x/index.html" },
-    { "src": "^/ap3x-pwa/?$",        "dest": "/ap3x-pwa/index.html" },
-    { "src": "^/(.*)",               "dest": "/$1" }
+  "redirects": [
+    { "source": "/",         "destination": "/ap3x-hub/", "permanent": false },
+    { "source": "/ap3x-hub", "destination": "/ap3x-hub/", "permanent": false },
+    { "source": "/ap3x",     "destination": "/ap3x/",     "permanent": false },
+    { "source": "/ap3x-pwa", "destination": "/ap3x-pwa/", "permanent": false }
   ],
   "headers": [
     {
@@ -26,13 +25,7 @@
       ]
     },
     {
-      "source": "/(.*)\\.html",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
-      ]
-    },
-    {
-      "source": "/(.*)/sw\\.js",
+      "source": "/(.*)sw\\.js",
       "headers": [
         { "key": "Service-Worker-Allowed", "value": "/" },
         { "key": "Cache-Control", "value": "no-cache" }
