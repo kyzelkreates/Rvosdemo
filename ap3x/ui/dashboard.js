@@ -673,65 +673,179 @@ function _sendAIMessage(query) {
 
 function _buildFleetMap(tall = false) {
   const vehicles = getVehicles();
-  const map = document.createElement("div");
-  map.className = "ap3x-map";
-  if (tall) map.style.minHeight = "320px";
+  const trips    = getTrips();
 
-  const bg = document.createElement("div"); bg.className = "ap3x-map__bg";
-  const grid = document.createElement("div"); grid.className = "ap3x-map__grid";
-  map.appendChild(bg); map.appendChild(grid);
+  // ── coordinate lookup for known locations ───────────────────────
+  const COORDS = {
+    "San Francisco, CA":  [37.7749, -122.4194],
+    "Santa Cruz":         [36.9741, -122.0308],
+    "Big Sur":            [36.2704, -121.8081],
+    "San Simeon":         [35.6425, -121.1896],
+    "Morro Bay":          [35.3658, -120.8499],
+    "San Luis Obispo":    [35.2828, -120.6596],
+    "Los Angeles, CA":    [34.0522, -118.2437],
+    "Denver, CO":         [39.7392, -104.9903],
+    "Estes Park":         [40.3772, -105.5217],
+    "Grand Lake":         [40.2525, -105.8228],
+    "Glenwood Springs":   [39.5505, -107.3248],
+    "Aspen":              [39.1911, -106.8175],
+    "Breckenridge":       [39.4817, -106.0384],
+    "Nashville, TN":      [36.1627, -86.7816],
+    "Memphis":            [35.1495, -90.0490],
+    "Tupelo":             [34.2576, -88.7034],
+    "Birmingham":         [33.5186, -86.8104],
+    "Montgomery":         [32.3668, -86.2999],
+    "Mobile":             [30.6954, -88.0399],
+    "New Orleans, LA":    [29.9511, -90.0715],
+    "Boston, MA":         [42.3601, -71.0589],
+    "Concord NH":         [43.2081, -71.5376],
+    "North Conway":       [43.9709, -71.1270],
+    "Stowe":              [44.4654, -72.6874],
+    "Montpelier":         [44.2601, -72.5754],
+    "Burlington, VT":     [44.4759, -73.2121]
+  };
 
-  const vehiclesEl = document.createElement("div");
-  vehiclesEl.className = "ap3x-map__vehicles";
-  vehiclesEl.style.position = "relative";
-  vehiclesEl.style.width = "100%";
-  vehiclesEl.style.height = "100%";
-  vehiclesEl.style.minHeight = "220px";
+  function interpCoord(trip) {
+    const pct   = (trip.progress_pct || 0) / 100;
+    const stops = trip.stops || [];
+    const dep   = COORDS[trip.departure]   || [39.5, -98.35];
+    const dest  = COORDS[trip.destination] || [39.5, -98.35];
 
-  // Place vehicles at distributed positions
-  const positions = [
-    { left: "15%", top: "20%" },
-    { left: "40%", top: "45%" },
-    { left: "65%", top: "25%" },
-    { left: "75%", top: "65%" },
-    { left: "25%", top: "70%" },
-    { left: "55%", top: "75%" }
-  ];
+    // build full waypoint list
+    const wps = [dep, ...stops.map(s => COORDS[s] || null).filter(Boolean), dest];
+    if (wps.length < 2) return dep;
 
-  vehicles.forEach((v, i) => {
-    const pos = positions[i % positions.length];
-    const dot = document.createElement("div");
-    dot.className = `ap3x-map__vehicle-dot ap3x-map__vehicle-dot--${v.status}`;
-    dot.style.left = pos.left;
-    dot.style.top = pos.top;
-    dot.innerHTML = `
-      <div class="ap3x-map__vehicle-dot__emoji">${v.image_tag}</div>
-      <div class="ap3x-map__vehicle-dot__label">${v.name}</div>
-    `;
-    vehiclesEl.appendChild(dot);
-  });
+    const seg = 1 / (wps.length - 1);
+    const segIdx = Math.min(Math.floor(pct / seg), wps.length - 2);
+    const segPct = (pct - segIdx * seg) / seg;
+    const a = wps[segIdx], b = wps[segIdx + 1];
+    return [
+      a[0] + (b[0] - a[0]) * segPct,
+      a[1] + (b[1] - a[1]) * segPct
+    ];
+  }
 
-  map.appendChild(vehiclesEl);
+  // ── wrapper ───────────────────────────────────────────────────────
+  const wrap = document.createElement("div");
+  wrap.style.position = "relative";
+  wrap.style.borderRadius = "12px";
+  wrap.style.overflow = "hidden";
+  wrap.style.border = "1px solid var(--border)";
 
-  // Legend
+  const mapEl = document.createElement("div");
+  const mapId = "ap3x-leaflet-" + Date.now();
+  mapEl.id = mapId;
+  mapEl.style.width = "100%";
+  mapEl.style.height = tall ? "360px" : "260px";
+  mapEl.style.background = "#060a14";
+  wrap.appendChild(mapEl);
+
+  // ── legend ────────────────────────────────────────────────────────
   const legend = document.createElement("div");
   legend.className = "ap3x-map__legend";
   [
     { color: "var(--status-en-route)", label: "En Route" },
-    { color: "var(--status-at-stop)", label: "At Stop" },
-    { color: "var(--status-parked)", label: "Parked" }
+    { color: "var(--status-at-stop)",  label: "At Stop"  },
+    { color: "var(--status-parked)",   label: "Parked"   }
   ].forEach(({ color, label }) => {
     const chip = document.createElement("span");
     chip.className = "ap3x-badge";
-    chip.style.background = "var(--bg-overlay)";
-    chip.style.border = `1px solid ${color}`;
-    chip.style.color = color;
-    chip.textContent = label;
+    chip.style.background  = "var(--bg-overlay)";
+    chip.style.border      = `1px solid ${color}`;
+    chip.style.color       = color;
+    chip.textContent       = label;
     legend.appendChild(chip);
   });
-  map.appendChild(legend);
+  wrap.appendChild(legend);
 
-  return map;
+  // ── init Leaflet after element is in DOM ─────────────────────────
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (!window.L) return;
+
+      const L = window.L;
+      const lmap = L.map(mapId, {
+        center: [39.5, -98.35],
+        zoom:   4,
+        zoomControl: true,
+        attributionControl: true
+      });
+
+      // Dark OSM tile layer
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18
+      }).addTo(lmap);
+
+      // Status → colour
+      const STATUS_COLOR = {
+        en_route:    "#3b82f6",
+        at_stop:     "#f59e0b",
+        parked:      "#6b7280",
+        maintenance: "#ef4444",
+        completed:   "#10b981"
+      };
+
+      const markers = [];
+
+      vehicles.forEach(v => {
+        // find active trip for this vehicle
+        const trip = trips.find(t => t.vehicle_id === v.vehicle_id && 
+          ["en_route","at_stop","scheduled","departed","delayed"].includes(t.status));
+
+        let coord;
+        if (trip) {
+          coord = interpCoord(trip);
+        } else {
+          // parked/maintenance — use departure of last trip or rough default
+          const lastTrip = [...trips].reverse().find(t => t.vehicle_id === v.vehicle_id);
+          coord = lastTrip ? (COORDS[lastTrip.departure] || [39.5, -98.35]) : [39.5, -98.35];
+          // spread parked vehicles slightly so they don't stack
+          coord = [coord[0] + (Math.random() - 0.5) * 2, coord[1] + (Math.random() - 0.5) * 3];
+        }
+
+        const color = STATUS_COLOR[v.status] || "#6b7280";
+
+        const icon = L.divIcon({
+          className: "",
+          html: `<div style="
+            background:${color};
+            border:2px solid #fff;
+            border-radius:50%;
+            width:32px;height:32px;
+            display:flex;align-items:center;justify-content:center;
+            font-size:16px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.6);
+            cursor:pointer;
+          ">${v.image_tag}</div>
+          <div style="
+            color:#fff;font-size:10px;font-weight:600;
+            text-align:center;margin-top:2px;
+            text-shadow:0 1px 3px rgba(0,0,0,0.9);
+            white-space:nowrap;
+          ">${v.name}</div>`,
+          iconSize:   [64, 48],
+          iconAnchor: [32, 16]
+        });
+
+        const marker = L.marker(coord, { icon }).addTo(lmap);
+        marker.bindPopup(`
+          <b>${v.image_tag} ${v.name}</b><br>
+          ${v.type} · ${v.year}<br>
+          Status: <b>${v.status.replace("_"," ")}</b><br>
+          Fuel: ${v.fuel_level}%<br>
+          ${trip ? `Route: ${trip.route_name}<br>Progress: ${trip.progress_pct}%` : ""}
+        `);
+        markers.push(marker);
+      });
+
+      // Store map ref so simulation updates can refresh markers
+      mapEl._leafletMap = lmap;
+      mapEl._leafletMarkers = markers;
+    });
+  });
+
+  return wrap;
 }
 
 function _buildVehicleCard(v) {
